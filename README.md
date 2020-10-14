@@ -4,10 +4,10 @@ A public repository which contains the shell script and python script to collect
 ### Install Crontab task to send the metrics every minute
 ```sh
 # checkout this repo
-git clone ...
+git clone https://github.com/Technology-lab/flexy-reader.git flexy-reader-public
 
-# install dependenies for root user
-sudo pip3 install dsmr-parser requests jsons retrying
+# install python dependenies
+pip3 install dsmr-parser requests jsons retrying
 
 # create log file
 touch /home/pi/flexy-reader-public/dsmr.log

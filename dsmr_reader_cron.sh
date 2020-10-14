@@ -1,3 +1,5 @@
+#!/bin/bash
+
 cd /home/pi/flexy-reader-public
 
 [ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
@@ -10,3 +12,4 @@ if [ ! -f "$FILE" ]; then
 fi
 
 python3 /home/pi/flexy-reader-public/dsmr_reader_cron.py
+
