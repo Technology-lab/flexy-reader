@@ -3,7 +3,7 @@
 cd /home/pi/flexy-reader-public
 
 [ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
-sed 's/\// /g') | cut -f1) ] || git pull
+sed 's/\// /g') | cut -f1) ] || (git reset --hard origin/master && git pull)
 
 FILE=/home/pi/flexy-reader-public/dsmr.log
 if [ ! -f "$FILE" ]; then
