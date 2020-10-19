@@ -6,6 +6,10 @@ A public repository which contains the shell script and python script to collect
 # checkout this repo
 git clone https://github.com/Technology-lab/flexy-reader.git flexy-reader-public
 
+# set global user name/email
+git config --global user.name "Raspberry PI"
+git config --global user.email "Raspberry@PI"
+
 # install python dependenies
 pip3 install dsmr-parser requests jsons retrying
 
