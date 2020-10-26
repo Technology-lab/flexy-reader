@@ -83,6 +83,7 @@ class SmartMetricsReader():
         self.host = os.getenv('FLEXY_BACKEND_HOST', 'http://localhost:8080').strip()
         self.metrics_url = self.host + "/metrics"
         self.meters_url = self.host + "/meters"
+        self.logs_url = self.host + "/logs"
 
         self.serial_reader = SerialReader(
             device='/dev/ttyUSB0',
@@ -201,8 +202,23 @@ class SmartMetricsReader():
             
             # post metrics
             self.post_metrics()
+            self.send_logs()
             break
 
+    def send_logs(self):
+        try:
+            url = self.logs_url + '/' + self.equipment_identifier
+            with open('/home/pi/flexy-reader-public/dsmr1.log', 'rb') as fin:
+                files = [('file', fin)]
+                self.logs_response = requests.post(url, files = files)
+                fin.close()
+                if self.logs_response.status_code == 200:
+                    logging.info('Recieved OK Response: [%s]', self.logs_response.json()['message'])
+                else:
+                    logging.error('Failure! Received Response with status [%s] and content [%s]', self.logs_response.status_code, self.logs_response.json())
+        except Exception as ex:
+            logging.error('Failed to send logs [%s]', ex)    
+    
     def valueOrNone(self, telegram, key):
         try:
             return telegram[self.metrics[key]].value
