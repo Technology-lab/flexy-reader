@@ -208,7 +208,7 @@ class SmartMetricsReader():
     def send_logs(self):
         try:
             url = self.logs_url + '/' + self.equipment_identifier
-            with open('/home/pi/flexy-reader-public/dsmr1.log', 'rb') as fin:
+            with open('/home/pi/flexy-reader-public/dsmr.log', 'rb') as fin:
                 files = [('file', fin)]
                 self.logs_response = requests.post(url, files = files)
                 fin.close()
