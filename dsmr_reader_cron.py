@@ -179,7 +179,7 @@ class SmartMetricsReader():
             self.consumed_normal_unit = self.unitOrNone(telegram, "energy.sensor.electricity.grid.consumed.normal")
             self.delivered_low_unit = self.unitOrNone(telegram, "energy.sensor.electricity.grid.delivered.low")
             self.delivered_normal_unit = self.unitOrNone(telegram, "energy.sensor.electricity.grid.delivered.normal")
-            self.voltage_l1_unit = self.unitOrNone(telegram, "energy.sensor.electricity.live.voltage.l1")
+            self.voltage_l1_unit = self.unitOrDefault(telegram, "energy.sensor.electricity.live.voltage.l1", "None")
             self.voltage_l2_unit = self.unitOrNone(telegram, "energy.sensor.electricity.live.voltage.l2")
             self.voltage_l3_unit = self.unitOrNone(telegram, "energy.sensor.electricity.live.voltage.l3")
             self.current_l1_unit = self.unitOrNone(telegram, "energy.sensor.electricity.live.current.l1")
@@ -229,7 +229,12 @@ class SmartMetricsReader():
             return telegram[self.metrics[key]].unit
         except:
             return None
-
+    
+    def unitOrDefault(self, telegram, key, defaultValue):
+        try:
+            return telegram[self.metrics[key]].unit
+        except:
+            return defaultValue
 
     def post_metrics(self):
         try:
