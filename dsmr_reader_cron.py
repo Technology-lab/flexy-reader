@@ -255,7 +255,7 @@ def collect_metrics():
     try:
         reader = SmartMetricsReader()
         reader.register_meter()
-        # reader.send_logs()
+        reader.send_logs()
         reader.read_metrics()
     except Exception as ex:
         logging.error('Failed to collect metrics [%s]', ex)
