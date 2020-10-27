@@ -3,6 +3,7 @@ from dsmr_parser.parsers import TelegramParser
 from dsmr_parser.clients import SerialReader, SERIAL_SETTINGS_V5
 from dsmr_parser import obis_references
 from retrying import retry
+from collections import deque
 import requests
 import jsons
 import os
@@ -204,17 +205,26 @@ class SmartMetricsReader():
             self.post_metrics()
             break
 
-    def send_logs(self):
+    def send_logs(self, send_partially = True):
         try:
             url = self.logs_url + '/' + self.equipment_identifier
-            with open('/home/pi/flexy-reader-public/dsmr.log', 'rb') as fin:
-                files = [('file', fin)]
-                self.logs_response = requests.post(url, files = files)
-                fin.close()
-                if self.logs_response.status_code == 200:
-                    logging.info('Recieved OK Response: [%s]', self.logs_response.json()['message'])
-                else:
-                    logging.error('Failure! Received Response with status [%s] and content [%s]', self.logs_response.status_code, self.logs_response.json())
+            if send_partially:
+                with open('/home/pi/flexy-reader-public/dsmr.log') as fin, open('/home/pi/dsmr-part.log', 'w') as fout:
+                    fout.writelines(deque(fin, 10000))
+                    fout.close()
+                    with open('/home/pi/dsmr-part.log', 'rb') as partialFin:
+                        files = [('file', partialFin)]
+                        self.logs_response = requests.post(url, files = files)
+                        partialFin.close()
+            else:
+                with open('/home/pi/flexy-reader-public/dsmr.log', 'rb') as fin:
+                    files = [('file', fin)]
+                    self.logs_response = requests.post(url, files = files)
+                    fin.close()
+            if self.logs_response.status_code == 200:
+                logging.info('Recieved OK Response: [%s]', self.logs_response.json()['message'])
+            else:
+                logging.error('Failure! Received Response with status [%s] and content [%s]', self.logs_response.status_code, self.logs_response.json())
         except Exception as ex:
             logging.error('Failed to send logs [%s]', ex)
 
@@ -255,7 +265,7 @@ def collect_metrics():
     try:
         reader = SmartMetricsReader()
         reader.register_meter()
-        reader.send_logs()
+        reader.send_logs(send_partially = True)
         reader.read_metrics()
     except Exception as ex:
         logging.error('Failed to collect metrics [%s]', ex)
