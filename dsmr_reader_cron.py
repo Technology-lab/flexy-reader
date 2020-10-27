@@ -19,7 +19,7 @@ class SmartMeter():
         return jsons.dumps(self)
 
 class LiveMetrics():
-    def __init__(self, production = None, productionUnit = None, consumption = None, consumptionUnit = None, 
+    def __init__(self, production = None, productionUnit = None, consumption = None, consumptionUnit = None,
     voltageL1 = None, voltageL1Unit = None, voltageL2 = None, voltageL2Unit = None, voltageL3 = None, voltageL3Unit = None,
     currentL1 = None, currentL1Unit = None, currentL2 = None, currentL2Unit = None, currentL3 = None, currentL3Unit = None,):
         self.production = production
@@ -43,8 +43,8 @@ class LiveMetrics():
         return jsons.dumps(self)
 
 class GridMetrics():
-    def __init__(self, consumedLow = None, consumedLowUnit = None, consumedNormal = None, consumedNormalUnit = None, deliveredLow = None, 
-    deliveredLowUnit = None, deliveredNormal = None, deliveredNormalUnit = None, tariff = None, longPowerFailureCount = None, shortPowerFailureCount = None, 
+    def __init__(self, consumedLow = None, consumedLowUnit = None, consumedNormal = None, consumedNormalUnit = None, deliveredLow = None,
+    deliveredLowUnit = None, deliveredNormal = None, deliveredNormalUnit = None, tariff = None, longPowerFailureCount = None, shortPowerFailureCount = None,
     voltageSagL1Count = None, voltageSwellL1Count = None, voltageSagL2Count = None, voltageSwellL2Count = None, voltageSagL3Count = None, voltageSwellL3Count = None):
         self.consumedLow = consumedLow
         self.consumedLowUnit = consumedLowUnit
@@ -125,7 +125,7 @@ class SmartMetricsReader():
         self.collected_metrics = []
 
     def register_meter(self):
-        for telegram in self.serial_reader.read():    
+        for telegram in self.serial_reader.read():
             self.equipment_identifier = telegram[self.metrics["energy.sensor.electricity.equipment_identifier"]].value
             logging.info('Register meter with equipment_identifier: [%s]', self.equipment_identifier)
             self.smart_meter = SmartMeter(self.smart_meter_id, self.equipment_identifier)
@@ -188,18 +188,18 @@ class SmartMetricsReader():
 
             # instantiate classes
             self.smart_meter = SmartMeter(self.smart_meter_id, self.equipment_identifier)
-            self.live_metrics = LiveMetrics(self.production, self.production_unit, self.consumption, self.consumption_unit, 
+            self.live_metrics = LiveMetrics(self.production, self.production_unit, self.consumption, self.consumption_unit,
                 self.voltage_l1, self.voltage_l1_unit, self.voltage_l2, self.voltage_l2_unit,self.voltage_l3, self.voltage_l3_unit,
                 self.current_l1, self.current_l1_unit, self.current_l2, self.current_l2_unit,self.current_l3, self.current_l3_unit)
 
-            self.grid_metrics = GridMetrics(self.consumed_low, self.consumed_low_unit, self.consumed_normal, self.consumed_normal_unit, self.delivered_low, self.delivered_low_unit, 
+            self.grid_metrics = GridMetrics(self.consumed_low, self.consumed_low_unit, self.consumed_normal, self.consumed_normal_unit, self.delivered_low, self.delivered_low_unit,
                 self.delivered_normal, self.delivered_normal_unit, self.tariff, self.long_power_failure_count, self.short_power_failure_count, self.voltage_sag_l1_count, self.voltage_swell_l1_count,
                 self.voltage_sag_l2_count, self.voltage_swell_l2_count, self.voltage_sag_l3_count, self.voltage_swell_l3_count)
-            
+
             self.smart_meter_metrics = SmartMeterMetrics(self.p1_message_header, self.p1_message_timestamp, self.smart_meter, self.live_metrics, self.grid_metrics)
             logging.debug('Collected Smart Meter Metric: [%s]', self.smart_meter_metrics.toJSON())
             self.collected_metrics.append(self.smart_meter_metrics)
-            
+
             # post metrics
             self.post_metrics()
             break
@@ -216,20 +216,20 @@ class SmartMetricsReader():
                 else:
                     logging.error('Failure! Received Response with status [%s] and content [%s]', self.logs_response.status_code, self.logs_response.json())
         except Exception as ex:
-            logging.error('Failed to send logs [%s]', ex)    
-    
+            logging.error('Failed to send logs [%s]', ex)
+
     def valueOrNone(self, telegram, key):
         try:
             return telegram[self.metrics[key]].value
         except:
             return None
-    
+
     def unitOrNone(self, telegram, key):
         try:
             return telegram[self.metrics[key]].unit
         except:
             return None
-    
+
     def unitOrDefault(self, telegram, key, defaultValue):
         try:
             return telegram[self.metrics[key]].unit
@@ -248,14 +248,14 @@ class SmartMetricsReader():
         except Exception as ex:
             logging.error('Failed to post smart meter metrics [%s]', ex)
             raise ex
-            
+
 
 def collect_metrics():
     logging.info("Registering smart meter and collecting the metrics.")
     try:
         reader = SmartMetricsReader()
         reader.register_meter()
-        reader.send_logs()
+        # reader.send_logs()
         reader.read_metrics()
     except Exception as ex:
         logging.error('Failed to collect metrics [%s]', ex)
