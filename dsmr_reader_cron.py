@@ -61,7 +61,7 @@ class GridMetrics():
         self.voltageSagL1Count = voltageSagL1Count
         self.voltageSwellL1Count = voltageSwellL1Count
         self.voltageSagL2Count = voltageSagL2Count
-        self.voltageSwell2Count = voltageSwellL2Count
+        self.voltageSwellL2Count = voltageSwellL2Count
         self.voltageSagL3Count = voltageSagL3Count
         self.voltageSwellL3Count = voltageSwellL3Count
 
